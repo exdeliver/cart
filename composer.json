@@ -3,8 +3,7 @@
     "description": "Cart System for Laravel applications",
     "license": "MIT",
     "require": {
-        "akaunting/money": "^1.0",
-        "vinkla/hashids": "^5.1"
+        "akaunting/money": "^1.0"
     },
     "scripts": {
         "post-package-install": [
