@@ -5,7 +5,7 @@ namespace Exdeliver\Cart\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Class CausewayCartServiceFacade
+ * Class CartServiceFacade
  *
  * @package Exdeliver\Cart\Facades
  */
