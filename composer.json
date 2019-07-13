@@ -1,0 +1,36 @@
+{
+    "name": "exdeliver/cart",
+    "description": "Cart System for Laravel applications",
+    "license": "MIT",
+    "require": {
+        "akaunting/money": "^1.0",
+        "vinkla/hashids": "^5.1"
+    },
+    "scripts": {
+        "post-package-install": [
+            "php artisan migrate",
+            "php artisan vendor:publish --tag=public --force"
+        ],
+        "post-package-update": [
+            "php artisan migrate",
+            "php artisan vendor:publish --tag=public --force"
+        ]
+    },
+    "autoload": {
+        "classmap": [
+            "database/seeds",
+            "database/factories"
+        ],
+        "psr-4": {
+            "Exdeliver\\Cart\\": "src/",
+            "Exdeliver\\Cart\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Exdeliver\\Cart\\ServiceProviders\\CartServiceProvider"
+            ]
+        }
+    }
+}
