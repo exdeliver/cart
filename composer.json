@@ -2,6 +2,12 @@
     "name": "exdeliver/cart",
     "description": "Cart System for Laravel applications",
     "license": "MIT",
+    "keywords": [
+        "laravel",
+        "php",
+        "cart",
+        "shopping"
+    ],
     "require": {
         "akaunting/money": "^1.0"
     },
