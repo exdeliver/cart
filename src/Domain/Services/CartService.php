@@ -315,6 +315,7 @@ class CartService extends ShopCalculationService
      */
     public function validateAndAddToCart(array $product, int $quantity = 0)
     {
+
         $requiredAttributes = [
             'product_id',
             'name',
@@ -326,7 +327,7 @@ class CartService extends ShopCalculationService
 
         $this->findRemoveProduct($product['product_id']);
 
-        if (count(array_intersect($requiredAttributes, $product)) !== count($product)) {
+        if (count(array_intersect_key(array_flip($requiredAttributes), $product)) !== count($product)) {
             throw new \Exception('Error, not all values set.');
         }
 

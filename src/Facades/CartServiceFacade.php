@@ -16,6 +16,6 @@ class CartServiceFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'cartservice';
+        return 'exdelivercartservice';
     }
 }

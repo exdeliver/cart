@@ -51,7 +51,7 @@ class CartServiceProvider extends ServiceProvider
      */
     public function getClassBindings()
     {
-        $this->app->singleton('cartservice', function () {
+        $this->app->singleton('exdelivercartservice', function () {
             return app(CartService::class);
         });
     }
