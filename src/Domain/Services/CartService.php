@@ -519,7 +519,11 @@ class CartService extends ShopCalculationService
     public function processArray($params)
     {
         $params = $params->map(function ($param) {
-            $param->id = (string)Str::uuid();
+            if(method_exists(new \Illuminate\Support\Str(),'uuid')) {
+                $param->id = (string)Str::uuid();
+            }else{
+                $param->id = (string)\Illuminate\Support\Str::slug(\Hash::make(str_random(8)));
+            }
             $param->quantity = $param->quantity ?? 1;
             return $param;
         });
