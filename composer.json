@@ -8,6 +8,12 @@
         "cart",
         "shopping"
     ],
+    "authors": [
+        {
+            "name": "Jason Hoendervanger",
+            "email": "info@exdeliver.com"
+        }
+    ],
     "require": {
         "akaunting/money": "^1.0"
     },
