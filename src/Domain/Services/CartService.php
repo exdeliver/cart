@@ -3,15 +3,17 @@
 namespace Exdeliver\Cart\Domain\Services;
 
 use Akaunting\Money\Money;
+use Exception;
 use Exdeliver\Cart\Domain\Entities\Cart\Item;
+use Hash;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Class CartService
- * @package Domain\Services
+ * Class CartService.
  */
 class CartService extends ShopCalculationService
 {
@@ -29,8 +31,9 @@ class CartService extends ShopCalculationService
 
     /**
      * CartService constructor.
+     *
      * @param SessionManager $session
-     * @param Dispatcher $events
+     * @param Dispatcher     $events
      */
     public function __construct(SessionManager $session, Dispatcher $events)
     {
@@ -42,6 +45,7 @@ class CartService extends ShopCalculationService
 
     /**
      * @param null $instance
+     *
      * @return $this
      */
     public function instance($instance = null)
@@ -94,20 +98,22 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return Collection|\Illuminate\Support\Collection
+     * @return Collection|Collection
      */
     public function getCollection()
     {
-        $content = $this->session->has($this->instance) ? collect($this->session->get($this->instance)) : new Collection;
+        $content = $this->session->has($this->instance) ? collect($this->session->get($this->instance)) : new Collection();
 
         return $content;
     }
 
     /**
-     * @param int $id
+     * @param int   $id
      * @param array $params
+     *
      * @return bool|mixed
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function update($id, array $params)
     {
@@ -118,7 +124,7 @@ class CartService extends ShopCalculationService
         $product->update($params);
 
         if (!$product) {
-            throw new \Exception('Cannot update a non existing product');
+            throw new Exception('Cannot update a non existing product');
         }
 
         $collection = $collection->where('id', '!=', $id);
@@ -133,11 +139,13 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * Find item by id
+     * Find item by id.
      *
      * @param $id
+     *
      * @return mixed
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function get($id)
     {
@@ -146,15 +154,12 @@ class CartService extends ShopCalculationService
         $result = $content->where('id', $id)->first();
 
         if (!$result) {
-            throw new \Exception('Could not find cart entry with id: ' . $id);
+            throw new Exception('Could not find cart entry with id: '.$id);
         }
 
         return $result;
     }
 
-    /**
-     * @return null
-     */
     public function clear()
     {
         $this->session->remove($this->instance);
@@ -163,7 +168,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function items_gross_total()
     {
@@ -173,7 +178,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function items_vat_total()
     {
@@ -199,7 +204,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function subtotal()
     {
@@ -213,7 +218,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return Collection|\Illuminate\Support\Collection
+     * @return Collection|Collection
      */
     public function discounts()
     {
@@ -222,15 +227,14 @@ class CartService extends ShopCalculationService
         $vatItemsTotal = $this->calculations()->sum('total_gross_price');
 
         $collection = $collection->where('type', '=', 'discount')->map(function ($item) use ($vatItemsTotal) {
-            $item = (object)$item;
+            $item = (object) $item;
 
             $item->subject_total = $vatItemsTotal;
             $result = null;
 
-            if ($item->discount_type === 'fixed') {
+            if ('fixed' === $item->discount_type) {
                 $result = $item->discount_amount;
-
-            } elseif ($item->discount_type === 'percentage' || $item->discount_type == 'percent') {
+            } elseif ('percentage' === $item->discount_type || 'percent' == $item->discount_type) {
                 $result = (($vatItemsTotal / 100) * $item->discount_amount);
             }
 
@@ -244,7 +248,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function vatTotal()
     {
@@ -294,7 +298,7 @@ class CartService extends ShopCalculationService
                     $ratos[] = [
                         'vat_total' => $amount,
                         'vat' => $vat,
-                        'formatted_vat' => __('VAT') . ' ' . ($vat + 0) . '%',
+                        'formatted_vat' => __('VAT').' '.($vat + 0).'%',
                         'amount' => $vatAmount ?? 0,
                         'formatted_amount' => Money::EUR($vatAmount ?? 0)->format(),
                     ];
@@ -309,13 +313,14 @@ class CartService extends ShopCalculationService
 
     /**
      * @param array $product
-     * @param int $quantity
+     * @param int   $quantity
+     *
      * @return mixed
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function validateAndAddToCart(array $product, int $quantity = 0)
     {
-
         $requiredAttributes = [
             'product_id',
             'name',
@@ -328,7 +333,7 @@ class CartService extends ShopCalculationService
         $this->findRemoveProduct($product['product_id']);
 
         if (count(array_intersect_key(array_flip($requiredAttributes), $product)) !== count($product)) {
-            throw new \Exception('Error, not all values set.');
+            throw new Exception('Error, not all values set.');
         }
 
         $product['quantity'] = $quantity;
@@ -341,7 +346,8 @@ class CartService extends ShopCalculationService
     /**
      * @param string $productId
      * @param string $type
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function findRemoveProduct(string $productId, $type = 'item'): void
     {
@@ -352,14 +358,16 @@ class CartService extends ShopCalculationService
 
         if (count($findExistingProduct) > 0) {
             foreach ($findExistingProduct as $product) {
-                $this->remove((string)$product->id);
+                $this->remove((string) $product->id);
             }
         }
     }
 
     /**
-     * Find items by data
+     * Find items by data.
+     *
      * @param $data
+     *
      * @return array|bool
      */
     public function find(array $data)
@@ -370,18 +378,17 @@ class CartService extends ShopCalculationService
 
         try {
             foreach ($data as $key => $value) {
-
                 $valid = $content->where($key, '=', $value)->all();
 
                 if (!$valid) {
                     $valid = false;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $valid = false;
         }
 
-        if ($valid !== false) {
+        if (false !== $valid) {
             return $valid;
         }
 
@@ -389,7 +396,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * returns all entries in cart also discounts
+     * returns all entries in cart also discounts.
      *
      * @return Collection
      */
@@ -398,7 +405,8 @@ class CartService extends ShopCalculationService
         $collection = $this->getCollection();
 
         $collection = $collection->map(function ($item) {
-            $item = (object)$item;
+            $item = (object) $item;
+
             return $item;
         });
 
@@ -407,8 +415,10 @@ class CartService extends ShopCalculationService
 
     /**
      * @param int $id
+     *
      * @return bool|void
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function remove($id)
     {
@@ -420,21 +430,22 @@ class CartService extends ShopCalculationService
             $this->events->fire('product.removed', $id);
 
             $this->putCollection($collection);
-
-        } catch (\Exception $e) {
-            throw new \Exception($e->getTraceAsString());
+        } catch (Exception $e) {
+            throw new Exception($e->getTraceAsString());
         }
     }
 
     /**
      * @param array $params
+     *
      * @return bool
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function add(array $params)
     {
         if (!$params['type']) {
-            throw new \Exception('A type is required before adding to cart');
+            throw new Exception('A type is required before adding to cart');
         }
 
         // discounts should be processed different because of their special calculations in order to support percentage discounts
@@ -447,15 +458,14 @@ class CartService extends ShopCalculationService
 
         $params = $this->processArray($collection);
 
-        $collection = (object)$params;
+        $collection = (object) $params;
 
         try {
             $this->events->fire('product.added', $params);
 
             $this->putCollection($collection);
-
-        } catch (\Exception $e) {
-            throw new \Exception($e->getTraceAsString());
+        } catch (Exception $e) {
+            throw new Exception($e->getTraceAsString());
         }
 
         return true;
@@ -463,7 +473,8 @@ class CartService extends ShopCalculationService
 
     /**
      * @param array $params
-     * @return Collection|\Illuminate\Support\Collection
+     *
+     * @return Collection|Collection
      */
     public function addItem(array $params)
     {
@@ -476,29 +487,28 @@ class CartService extends ShopCalculationService
 
     /**
      * @param array $params
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function checkRequirements(array $params)
     {
         if (count($params) > 0) {
             foreach ($params as $item) {
-
                 if (is_array($item)) {
-                    $item = (object)$item;
+                    $item = (object) $item;
                 }
 
-                if ($item->type !== 'discount' && !$item->product_id) {
-                    throw new \Exception('Product ID is required'); // must be unique for discounts
+                if ('discount' !== $item->type && !$item->product_id) {
+                    throw new Exception('Product ID is required'); // must be unique for discounts
                 }
 
-                if ($item->type !== 'discount') {
-
+                if ('discount' !== $item->type) {
                     if (is_null($item->gross_price)) {
-                        throw new \Exception('Product gross price is required');
+                        throw new Exception('Product gross price is required');
                     }
 
                     if (is_null($item->vat)) {
-                        throw new \Exception('Product vat is required');
+                        throw new Exception('Product vat is required');
                     }
 
                     if (!$item->quantity) {
@@ -507,7 +517,7 @@ class CartService extends ShopCalculationService
                 }
 
                 if (!$item->name) {
-                    throw new \Exception('Product name is required');
+                    throw new Exception('Product name is required');
                 }
             }
         }
@@ -515,17 +525,19 @@ class CartService extends ShopCalculationService
 
     /**
      * @param $params
+     *
      * @return mixed
      */
     public function processArray($params)
     {
         $params = $params->map(function ($param) {
-            if(method_exists(new \Illuminate\Support\Str(),'uuid')) {
-                $param->id = (string)Str::uuid();
-            }else{
-                $param->id = (string)\Illuminate\Support\Str::slug(\Hash::make(str_random(8)));
+            if (method_exists(new Str(), 'uuid')) {
+                $param->id = (string) Str::uuid();
+            } else {
+                $param->id = (string) Str::slug(Hash::make(str_random(8)));
             }
             $param->quantity = $param->quantity ?? 1;
+
             return $param;
         });
 
@@ -535,7 +547,7 @@ class CartService extends ShopCalculationService
     /**
      * Get Summary.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function summary()
     {
@@ -556,7 +568,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function subtotal_before_discount()
     {
@@ -576,7 +588,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function quantity()
     {
@@ -586,7 +598,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function weight()
     {
@@ -601,7 +613,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function total()
     {

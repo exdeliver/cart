@@ -2,9 +2,10 @@
 
 namespace Exdeliver\Cart\Domain\Entities\Cart;
 
+use Akaunting\Money\Money;
+
 /**
- * Class Item
- * @package Domain\Entities\Cart
+ * Class Item.
  */
 class Item
 {
@@ -36,7 +37,7 @@ class Item
     }
 
     /**
-     * @return \Akaunting\Money\Money
+     * @return Money
      */
     public function getPrice()
     {

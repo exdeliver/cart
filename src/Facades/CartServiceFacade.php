@@ -5,9 +5,7 @@ namespace Exdeliver\Cart\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Class CartServiceFacade
- *
- * @package Exdeliver\Cart\Facades
+ * Class CartServiceFacade.
  */
 class CartServiceFacade extends Facade
 {

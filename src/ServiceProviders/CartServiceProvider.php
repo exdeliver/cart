@@ -6,8 +6,7 @@ use Exdeliver\Cart\Domain\Services\CartService;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Class CartServiceProvider
- * @package Exdeliver\Cart\ServiceProviders
+ * Class CartServiceProvider.
  */
 class CartServiceProvider extends ServiceProvider
 {
@@ -24,7 +23,7 @@ class CartServiceProvider extends ServiceProvider
     protected $policies = [];
 
     /**
-     * Boot
+     * Boot.
      */
     public function boot()
     {
@@ -33,16 +32,16 @@ class CartServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configuration
+     * Configuration.
      */
     public function getConfiguration()
     {
-        $packageRootDir = __DIR__ . '/../..';
+        $packageRootDir = __DIR__.'/../..';
 
-        $this->mergeConfigFrom($packageRootDir . '/config/cart.php', 'cart');
+        $this->mergeConfigFrom($packageRootDir.'/config/cart.php', 'cart');
 
         $this->publishes([
-            $packageRootDir . '/assets/compiled' => public_path('vendor/exdeliver/cart'),
+            $packageRootDir.'/assets/compiled' => public_path('vendor/exdeliver/cart'),
         ], 'public');
     }
 
