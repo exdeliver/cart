@@ -229,7 +229,6 @@ class CartService extends ShopCalculationService
 
             if ($item->discount_type === 'fixed') {
                 $result = $item->discount_amount;
-
             } elseif ($item->discount_type === 'percentage' || $item->discount_type == 'percent') {
                 $result = (($vatItemsTotal / 100) * $item->discount_amount);
             }
@@ -315,7 +314,6 @@ class CartService extends ShopCalculationService
      */
     public function validateAndAddToCart(array $product, int $quantity = 0)
     {
-
         $requiredAttributes = [
             'product_id',
             'name',
@@ -370,7 +368,6 @@ class CartService extends ShopCalculationService
 
         try {
             foreach ($data as $key => $value) {
-
                 $valid = $content->where($key, '=', $value)->all();
 
                 if (!$valid) {
@@ -420,7 +417,6 @@ class CartService extends ShopCalculationService
             $this->events->fire('product.removed', $id);
 
             $this->putCollection($collection);
-
         } catch (\Exception $e) {
             throw new \Exception($e->getTraceAsString());
         }
@@ -453,7 +449,6 @@ class CartService extends ShopCalculationService
             $this->events->fire('product.added', $params);
 
             $this->putCollection($collection);
-
         } catch (\Exception $e) {
             throw new \Exception($e->getTraceAsString());
         }
@@ -482,7 +477,6 @@ class CartService extends ShopCalculationService
     {
         if (count($params) > 0) {
             foreach ($params as $item) {
-
                 if (is_array($item)) {
                     $item = (object)$item;
                 }
@@ -492,7 +486,6 @@ class CartService extends ShopCalculationService
                 }
 
                 if ($item->type !== 'discount') {
-
                     if (is_null($item->gross_price)) {
                         throw new \Exception('Product gross price is required');
                     }
@@ -520,9 +513,9 @@ class CartService extends ShopCalculationService
     public function processArray($params)
     {
         $params = $params->map(function ($param) {
-            if(method_exists(new \Illuminate\Support\Str(),'uuid')) {
+            if (method_exists(new \Illuminate\Support\Str(), 'uuid')) {
                 $param->id = (string)Str::uuid();
-            }else{
+            } else {
                 $param->id = (string)\Illuminate\Support\Str::slug(\Hash::make(str_random(8)));
             }
             $param->quantity = $param->quantity ?? 1;
