@@ -6,7 +6,7 @@ use Akaunting\Money\Money;
 use Illuminate\Support\Collection;
 
 /**
- * Class ShopCalculationService
+ * Class ShopCalculationService.
  */
 class ShopCalculationService
 {
@@ -24,7 +24,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function items_gross_total()
     {
@@ -41,7 +41,6 @@ class ShopCalculationService
         $collection = $this->items();
 
         $collection = $collection->map(function ($item) {
-
             $grossPrice = (isset($item->special_price) && $item->special_price > 0 && $item->special_price < $item->gross_price) ? $item->special_price : $item->gross_price;
 
             // Original vat price
@@ -70,7 +69,7 @@ class ShopCalculationService
     }
 
     /**
-     * returns items
+     * returns items.
      *
      * @return Collection
      */
@@ -79,7 +78,8 @@ class ShopCalculationService
         $collection = $this->getCollection();
 
         $collection = $collection->where('type', '!=', 'discount')->where('quantity', '>', 0)->map(function ($item) {
-            $item = (object)$item;
+            $item = (object) $item;
+
             return $item;
         });
 
@@ -97,7 +97,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function items_vat_total()
     {
@@ -107,7 +107,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function quantity()
     {
@@ -125,7 +125,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function total()
     {
@@ -133,7 +133,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function subtotal()
     {
@@ -147,7 +147,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return Collection|\Illuminate\Support\Collection
+     * @return Collection|Collection
      */
     public function discounts()
     {
@@ -156,7 +156,7 @@ class ShopCalculationService
         $vatItemsTotal = $this->calculations()->sum('total_gross_price');
 
         $collection = $collection->where('type', '=', 'discount')->map(function ($item) use ($vatItemsTotal) {
-            $item = (object)$item;
+            $item = (object) $item;
 
             $item->subject_total = $vatItemsTotal;
             $result = null;
@@ -228,7 +228,7 @@ class ShopCalculationService
                     $ratos[] = [
                         'vat_total' => $amount,
                         'vat' => $vat,
-                        'formatted_vat' => __('VAT') . ' ' . ($vat + 0) . '%',
+                        'formatted_vat' => __('VAT').' '.($vat + 0).'%',
                         'amount' => $vatAmount ?? 0,
                         'formatted_amount' => Money::EUR($vatAmount ?? 0)->format(),
                     ];
@@ -250,7 +250,7 @@ class ShopCalculationService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function vatTotal()
     {
