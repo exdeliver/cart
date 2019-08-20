@@ -4,11 +4,13 @@ namespace Exdeliver\Cart\Domain\Entities\Cart;
 
 use Akaunting\Money\Money;
 
-/**
- * Class Item.
- */
 class Item
 {
+    public const ITEM = 'item';
+    public const DISCOUNT = 'discount';
+    public const OTHER = 'other';
+    public const FEE = 'fee';
+
     public $id;
     public $product_id;
     public $name;

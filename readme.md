@@ -29,7 +29,7 @@ Add to cart
             'gross_price' => $product->price,
             'vat' => $product->vat,
             'quantity' => 1,
-            'type' => 'item', // or discount  
+            'type' => 'item', // item, discount, fee, other (item and other are countable items quantity() )
     ]);
     
     Cart::subtotal()

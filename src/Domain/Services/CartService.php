@@ -187,7 +187,7 @@ class CartService extends ShopCalculationService
      */
     public function serviceFee()
     {
-        return $this->items()->where('type', 'fee')->sum('total_vat_price');
+        return $this->items()->where('type', Item::FEE)->sum('total_vat_price');
     }
 
     /**
@@ -205,7 +205,7 @@ class CartService extends ShopCalculationService
     {
         $collection = $this->calculations();
 
-        $subtotal = $collection->where('type', 'item')->sum('total_gross_price');
+        $subtotal = $collection->where('type', Item::ITEM)->sum('total_gross_price');
 
         $discounts = ($this->discounts()->sum('discount_price') > 0) ? $this->discounts()->sum('discount_price') : 0;
 
@@ -221,7 +221,7 @@ class CartService extends ShopCalculationService
 
         $vatItemsTotal = $this->calculations()->sum('total_gross_price');
 
-        $collection = $collection->where('type', '=', 'discount')->map(function ($item) use ($vatItemsTotal) {
+        $collection = $collection->where('type', '=', Item::DISCOUNT)->map(function ($item) use ($vatItemsTotal) {
             $item = (object)$item;
 
             $item->subject_total = $vatItemsTotal;
@@ -229,7 +229,7 @@ class CartService extends ShopCalculationService
 
             if ($item->discount_type === 'fixed') {
                 $result = $item->discount_amount;
-            } elseif ($item->discount_type === 'percentage' || $item->discount_type == 'percent') {
+            } elseif ($item->discount_type === 'percentage' || $item->discount_type === 'percent') {
                 $result = (($vatItemsTotal / 100) * $item->discount_amount);
             }
 
@@ -326,7 +326,7 @@ class CartService extends ShopCalculationService
         $this->findRemoveProduct($product['product_id']);
 
         if (count(array_intersect_key(array_flip($requiredAttributes), $product)) !== count($product)) {
-            throw new \Exception('Error, not all values set.');
+            throw new \Exception('Error, not all values set.', ['values' => $product]);
         }
 
         $product['quantity'] = $quantity;
@@ -481,11 +481,11 @@ class CartService extends ShopCalculationService
                     $item = (object)$item;
                 }
 
-                if ($item->type !== 'discount' && !$item->product_id) {
+                if ($item->type !== Item::DISCOUNT && !$item->product_id) {
                     throw new \Exception('Product ID is required'); // must be unique for discounts
                 }
 
-                if ($item->type !== 'discount') {
+                if ($item->type !== Item::DISCOUNT) {
                     if (is_null($item->gross_price)) {
                         throw new \Exception('Product gross price is required');
                     }
@@ -555,7 +555,7 @@ class CartService extends ShopCalculationService
     {
         $collection = $this->calculations();
 
-        $subtotal = $collection->where('type', 'item')->sum('total_gross_price');
+        $subtotal = $collection->whereIn('type', [Item::ITEM, Item::OTHER, Item::FEE])->sum('total_gross_price');
 
         return $subtotal;
     }
@@ -573,7 +573,7 @@ class CartService extends ShopCalculationService
      */
     public function quantity()
     {
-        $collection = $this->items()->where('type', 'item');
+        $collection = $this->items()->whereIn('type', [Item::ITEM, Item::OTHER]);
 
         return $collection->sum('quantity');
     }
@@ -583,7 +583,7 @@ class CartService extends ShopCalculationService
      */
     public function weight()
     {
-        $collection = $this->items()->where('type', 'item');
+        $collection = $this->items()->where('type', Item::ITEM);
 
         return $collection->sum('weight');
     }
@@ -606,6 +606,6 @@ class CartService extends ShopCalculationService
      */
     public function grossServiceFee()
     {
-        return $this->items()->where('type', 'fee')->sum('total_gross_price');
+        return $this->items()->where('type', Item::FEE)->sum('total_gross_price');
     }
 }

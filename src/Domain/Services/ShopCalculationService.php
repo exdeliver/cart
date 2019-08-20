@@ -3,6 +3,7 @@
 namespace Exdeliver\Cart\Domain\Services;
 
 use Akaunting\Money\Money;
+use Exdeliver\Cart\Domain\Entities\Cart\Item;
 use Illuminate\Support\Collection;
 
 /**
@@ -77,7 +78,7 @@ class ShopCalculationService
     {
         $collection = $this->getCollection();
 
-        $collection = $collection->where('type', '!=', 'discount')->where('quantity', '>', 0)->map(function ($item) {
+        $collection = $collection->where('type', '!=', Item::DISCOUNT)->where('quantity', '>', 0)->map(function ($item) {
             $item = (object) $item;
 
             return $item;
@@ -111,7 +112,7 @@ class ShopCalculationService
      */
     public function quantity()
     {
-        $collection = $this->items()->where('type', 'item');
+        $collection = $this->items()->where('type', Item::ITEM);
 
         return $collection->sum('quantity');
     }
@@ -121,7 +122,7 @@ class ShopCalculationService
      */
     public function serviceFee()
     {
-        return $this->items()->where('type', 'fee')->sum('total_vat_price');
+        return $this->items()->where('type', Item::FEE)->sum('total_vat_price');
     }
 
     /**
@@ -139,7 +140,7 @@ class ShopCalculationService
     {
         $collection = $this->calculations();
 
-        $subtotal = $collection->where('type', 'item')->sum('total_gross_price');
+        $subtotal = $collection->where('type', Item::ITEM)->sum('total_gross_price');
 
         $discounts = ($this->discounts()->sum('discount_price') > 0) ? $this->discounts()->sum('discount_price') : 0;
 
@@ -155,7 +156,7 @@ class ShopCalculationService
 
         $vatItemsTotal = $this->calculations()->sum('total_gross_price');
 
-        $collection = $collection->where('type', '=', 'discount')->map(function ($item) use ($vatItemsTotal) {
+        $collection = $collection->where('type', '=', Item::DISCOUNT)->map(function ($item) use ($vatItemsTotal) {
             $item = (object) $item;
 
             $item->subject_total = $vatItemsTotal;
@@ -182,7 +183,7 @@ class ShopCalculationService
      */
     public function grossServiceFee()
     {
-        return $this->items()->where('type', 'fee')->sum('total_gross_price');
+        return $this->items()->where('type', Item::FEE)->sum('total_gross_price');
     }
 
     /**
@@ -196,7 +197,7 @@ class ShopCalculationService
 
         $discount = $this->discounts();
 
-        $ratos = [];
+        $ratios = [];
 
         if (isset($discount) && count($discount) > 0) {
             $discount = $discount->sum('discount_price');
@@ -225,7 +226,7 @@ class ShopCalculationService
                     $vatAmount = $amount;
                 }
                 if (isset($vatAmount) && $vatAmount > 0) {
-                    $ratos[] = [
+                    $ratios[] = [
                         'vat_total' => $amount,
                         'vat' => $vat,
                         'formatted_vat' => __('VAT').' '.($vat + 0).'%',
@@ -236,9 +237,9 @@ class ShopCalculationService
             }
         }
 
-        $ratos = collect($ratos);
+        $ratios = collect($ratios);
 
-        return $ratos;
+        return $ratios;
     }
 
     /**
