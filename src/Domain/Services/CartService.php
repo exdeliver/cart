@@ -125,7 +125,7 @@ class CartService extends ShopCalculationService
 
         $collection->push($product);
 
-        $this->events->fire('product.updated', $id);
+        $this->events->dispatch('product.updated', $id);
 
         $this->putCollection($collection);
 
@@ -414,7 +414,7 @@ class CartService extends ShopCalculationService
 
             $collection = $collection->where('id', '!=', $id);
 
-            $this->events->fire('product.removed', $id);
+            $this->events->dispatch('product.removed', $id);
 
             $this->putCollection($collection);
         } catch (\Exception $e) {
@@ -446,7 +446,7 @@ class CartService extends ShopCalculationService
         $collection = (object)$params;
 
         try {
-            $this->events->fire('product.added', $params);
+            $this->events->dispatch('product.added', $params);
 
             $this->putCollection($collection);
         } catch (\Exception $e) {
