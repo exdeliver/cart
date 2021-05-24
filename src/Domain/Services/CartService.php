@@ -131,6 +131,36 @@ class CartService extends ShopCalculationService
 
         return true;
     }
+    
+    /**
+     * @param $column
+     * @param $value
+     * @param  array  $params
+     * @return bool
+     * @throws \Exception
+     */
+    public function updateBy($column, $value, array $params)
+    {
+        $collection = $this->getCollection();
+
+        $product = $collection->where($column, $value)->first();
+
+        $product->update($params);
+
+        if (!$product) {
+            throw new \Exception('Cannot update a non existing product');
+        }
+
+        $collection = $collection->where($column, '!=', $value);
+
+        $collection->push($product);
+
+        $this->events->dispatch('product.updated', $value);
+
+        $this->putCollection($collection);
+
+        return true;
+    }
 
     /**
      * Find item by id
