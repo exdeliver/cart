@@ -143,7 +143,7 @@ class CartService extends ShopCalculationService
     {
         $collection = $this->getCollection();
 
-        $product = $collection->where($column, $value)->first();
+        $product = $collection->where($column, $value)->firstOrFail();
 
         $product->update($params);
 
