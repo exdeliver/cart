@@ -131,7 +131,7 @@ class CartService extends ShopCalculationService
 
         return true;
     }
-    
+
     /**
      * @param $column
      * @param $value
@@ -143,13 +143,13 @@ class CartService extends ShopCalculationService
     {
         $collection = $this->getCollection();
 
-        $product = $collection->where($column, $value)->firstOrFail();
-
-        $product->update($params);
+        $product = $collection->firstWhere($column, $value);
 
         if (!$product) {
             throw new \Exception('Cannot update a non existing product');
         }
+
+        $product->update($params);
 
         $collection = $collection->where($column, '!=', $value);
 
