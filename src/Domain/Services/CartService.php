@@ -569,7 +569,7 @@ class CartService extends ShopCalculationService
     {
         $data = [
             'status' => true,
-            'items' => $this->items()->toArray(),
+            'items' => $this->items()->values()->all(),
             'subtotal_before_discount' => Money::EUR($this->subtotal_before_discount() ?? 0)->format(),
             'subtotal' => Money::EUR($this->subtotal() ?? 0)->format(),
             'vattotal' => Money::EUR($this->vatTotal() ?? 0)->format(),
