@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * Class CartService
+ *
  * @package Domain\Services
  */
 class CartService extends ShopCalculationService
@@ -29,8 +30,9 @@ class CartService extends ShopCalculationService
 
     /**
      * CartService constructor.
-     * @param SessionManager $session
-     * @param Dispatcher $events
+     *
+     * @param  SessionManager  $session
+     * @param  Dispatcher  $events
      */
     public function __construct(SessionManager $session, Dispatcher $events)
     {
@@ -41,7 +43,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param null $instance
+     * @param  null  $instance
      * @return $this
      */
     public function instance($instance = null)
@@ -62,7 +64,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param null $collection
+     * @param  null  $collection
      */
     public function setCollection($collection = null)
     {
@@ -76,7 +78,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param null $collection
+     * @param  null  $collection
      */
     public function putCollection($collection = null)
     {
@@ -104,8 +106,8 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param int $id
-     * @param array $params
+     * @param  int  $id
+     * @param  array  $params
      * @return bool|mixed
      * @throws \Exception
      */
@@ -337,8 +339,8 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param array $product
-     * @param int $quantity
+     * @param  array  $product
+     * @param  int  $quantity
      * @return mixed
      * @throws \Exception
      */
@@ -367,8 +369,8 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param string $productId
-     * @param string $type
+     * @param  string  $productId
+     * @param  string  $type
      * @throws \Exception
      */
     public function findRemoveProduct(string $productId, $type = 'item'): void
@@ -387,6 +389,7 @@ class CartService extends ShopCalculationService
 
     /**
      * Find items by data
+     *
      * @param $data
      * @return array|bool
      */
@@ -426,6 +429,7 @@ class CartService extends ShopCalculationService
 
         $collection = $collection->map(function ($item) {
             $item = (object)$item;
+
             return $item;
         });
 
@@ -433,7 +437,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return bool|void
      * @throws \Exception
      */
@@ -453,7 +457,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return bool
      * @throws \Exception
      */
@@ -487,7 +491,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return Collection|\Illuminate\Support\Collection
      */
     public function addItem(array $params)
@@ -500,7 +504,7 @@ class CartService extends ShopCalculationService
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @throws \Exception
      */
     public function checkRequirements(array $params)
@@ -549,6 +553,7 @@ class CartService extends ShopCalculationService
                 $param->id = (string)\Illuminate\Support\Str::slug(\Hash::make(str_random(8)));
             }
             $param->quantity = $param->quantity ?? 1;
+
             return $param;
         });
 
@@ -558,13 +563,13 @@ class CartService extends ShopCalculationService
     /**
      * Get Summary.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return array
      */
     public function summary()
     {
         $data = [
             'status' => true,
-            'items' => $this->items()->toJson(),
+            'items' => $this->items()->toArray(),
             'subtotal_before_discount' => Money::EUR($this->subtotal_before_discount() ?? 0)->format(),
             'subtotal' => Money::EUR($this->subtotal() ?? 0)->format(),
             'vattotal' => Money::EUR($this->vatTotal() ?? 0)->format(),
@@ -575,7 +580,7 @@ class CartService extends ShopCalculationService
             'total' => Money::EUR($this->total() ?? 0)->format(),
         ];
 
-        return json_encode($data);
+        return $data;
     }
 
     /**
