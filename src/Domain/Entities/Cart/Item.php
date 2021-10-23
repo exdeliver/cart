@@ -7,6 +7,7 @@ use Akaunting\Money\Money;
 class Item
 {
     public const ITEM = 'item';
+    public const ITEM = 'product';
     public const DISCOUNT = 'discount';
     public const OTHER = 'other';
     public const FEE = 'fee';
