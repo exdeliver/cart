@@ -237,7 +237,7 @@ class CartService extends ShopCalculationService
     {
         $collection = $this->calculations();
 
-        $subtotal = $collection->where('type', Item::ITEM)->sum('total_gross_price');
+        $subtotal = $collection->whereIn('type', [Item::ITEM, Item::PRODUCT])->sum('total_gross_price');
 
         $discounts = ($this->discounts()->sum('discount_price') > 0) ? $this->discounts()->sum('discount_price') : 0;
 
@@ -590,7 +590,7 @@ class CartService extends ShopCalculationService
     {
         $collection = $this->calculations();
 
-        $subtotal = $collection->whereIn('type', [Item::ITEM, Item::OTHER, Item::FEE])->sum('total_gross_price');
+        $subtotal = $collection->whereIn('type', [Item::ITEM, Item::PRODUCT, Item::OTHER, Item::FEE])->sum('total_gross_price');
 
         return $subtotal;
     }
@@ -618,7 +618,7 @@ class CartService extends ShopCalculationService
      */
     public function weight()
     {
-        $collection = $this->items()->where('type', Item::ITEM);
+        $collection = $this->items()->whereIn('type', [Item::ITEM, Item::PRODUCT]);
 
         return $collection->sum('weight');
     }
