@@ -608,7 +608,7 @@ class CartService extends ShopCalculationService
      */
     public function quantity()
     {
-        $collection = $this->items()->whereIn('type', [Item::ITEM, Item::OTHER]);
+        $collection = $this->items()->whereIn('type', [Item::ITEM, Item::PRODUCT, Item::OTHER]);
 
         return $collection->sum('quantity');
     }
