@@ -520,13 +520,6 @@ class CartService extends ShopCalculationService
                 }
 
                 if ($item->type !== Item::DISCOUNT) {
-                    if (is_null($item->gross_price)) {
-                        throw new \Exception('Product gross price is required');
-                    }
-
-                    if (is_null($item->vat)) {
-                        throw new \Exception('Product vat is required');
-                    }
 
                     if (!$item->quantity) {
                         $item->quantity = 0;
